@@ -1,0 +1,12 @@
+version: "2"
+services:
+  elasticsearch:
+    image: diogok/elasticsearch
+    ports:
+      - 9200:9200
+    volumes:
+      - /var/data/dwc-elasticsearch/data:/usr/share/elasticsearch/data:rw
+  kibana:
+    image: diogok/kibana
+    ports:
+      - 8001:8001

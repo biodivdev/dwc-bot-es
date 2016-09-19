@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "point": {
+      "store": true,
+      "lat_lon": true,
+      "type": "geo_point"
+    }
+  },
+  "transform": [
+    {
+      "lang": "groovy",
+      "script": "try { if (ctx._source.containsKey('decimalLatitude') && ctx._source.containsKey('decimalLongitude') && ctx._source['decimalLatitude'].toDouble() <= 90 && ctx._source['decimalLatitude'].toDouble() >= -90 && ctx._source['decimalLongitude'].toDouble() <= 180 && ctx._source['decimalLongitude'].toDouble() >= -180) { ctx._source['point'] = [ctx._source['decimalLongitude'].toDouble(), ctx._source['decimalLatitude'].toDouble()];} } catch (Exception e) { ctx._source['point'] = null; }"
+    }
+  ]
+}
