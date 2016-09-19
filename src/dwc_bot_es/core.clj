@@ -85,7 +85,8 @@
          (doseq [rec recs]
            (log/info "Resource" rec)
            (try
-             (run (:dwca rec) rec)
+             (when (dwca/occurrences? (:dwca rec))
+               (run (:dwca rec) rec))
              (catch Exception e (log/warn "Exception runing" rec e)))))
        (log/info "Will rest.")
        (Thread/sleep (* 1 60 60 1000)))))
