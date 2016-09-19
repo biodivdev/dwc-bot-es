@@ -23,14 +23,14 @@
   (assoc occ :id (:occurrenceID occ)
              :identifier (:occurrenceID occ)
              :timestamp (now)
-             :source src
-             :type "occurrence"))
+             :point {:lat (:decimalLatitude occ) :long (:decimalLongitude occ)}
+             :source src))
 
 (defn prepare-occ
   [src occ]
   "Prepare to send to elasticsearch"
    (let [id (:occurrenceID occ)]
-     [{:index {:_index config/index :_type (:type occ) :_id id}}
+     [{:index {:_index config/index :_type "occurrence" :_id id}}
       (metadata src occ)]))
 
 (defn make-body

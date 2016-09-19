@@ -36,8 +36,8 @@
   (let [done (atom false)]
     (while (not @done)
       (try 
-        (log/info (str "Waiting: " (str es "/" index )))
-        (let [r (http/get (str es "/" index) {:throw-exceptions false})]
+        (log/info (str "Waiting: " es))
+        (let [r (http/get es  {:throw-exceptions false})]
           (if (= 200 (:status r))
             (reset! done true)
             (Thread/sleep 1000)))
@@ -52,6 +52,9 @@
   (wait-es)
   (let [mapping (slurp (io/resource "occurrence_mapping.json"))]
     (try
+      (log/info 
+        (:body
+          (http/put (str es "/" index) {:throw-exceptions false})))
       (log/info 
         (:body
           (http/put (str es "/" index "/_mapping/occurrence")
