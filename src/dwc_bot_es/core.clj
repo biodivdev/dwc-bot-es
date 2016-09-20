@@ -19,13 +19,27 @@
   "Get all resources of all inputs ipts"
   [] (flatten (map ipt-feed/get-resources (config/inputs))))
 
+(defn point
+  [occ] 
+  (when (and (not (nil? (:decimalLatitude occ))) 
+             (not (nil? (:decimalLongitude occ))))
+    (try
+      (let [lat (Double/valueOf (:decimalLatitude occ))
+            lon (Double/valueOf (:decimalLongitude occ))]
+         (when (and (>= lat -90.0)
+                    (<= lat 90.0)
+                    (>= lon -180.0)
+                    (<= lon 180.0))
+          {:lat lat :lon lon}))
+      (catch Exception e nil))))
+
 (defn metadata
   "Assoc metadata to the occurrence"
   [src occ] 
   (assoc occ :id (:occurrenceID occ)
              :identifier (:occurrenceID occ)
              :timestamp (now)
-             :point {:lat (:decimalLatitude occ) :long (:decimalLongitude occ)}
+             :point (point occ)
              :source src))
 
 (defn prepare-occ
