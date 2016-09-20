@@ -17,4 +17,5 @@
 
                  [com.taoensso/timbre "4.7.4"]
                  [environ "1.1.0"]]
-  :source-paths ["src"])
+  :source-paths ["src"]
+  :profiles {:uberjar {:aot :all}})

@@ -7,7 +7,9 @@
   (:require [batcher.core :refer :all])
   (:require [clojure.core.async :refer [<! <!! >! >!! go go-loop chan close!]])
   (:require [clj-http.lite.client :as http])
-  (:require [taoensso.timbre :as log]))
+  (:require [taoensso.timbre :as log])
+  
+  (:gen-class))
 
 (defn now
   "Get current timestamp"
@@ -75,19 +77,21 @@
 (defn -main
   "Keep on running the bot on all sources. 
    Return an status atom that can swap to :stop to stop the bot."
-  [& args] 
+  [ & args ] 
    (config/setup)
-   (while true
-     (do
-       (log/info "Bot Active")
-       (let [recs  (all-resources)]
-         (log/info "Got" (count recs) "resources")
-         (doseq [rec recs]
-           (log/info "Resource" rec)
-           (try
-             (when (dwca/occurrences? (:dwca rec))
-               (run (:dwca rec) rec))
-             (catch Exception e (log/warn "Exception runing" rec e)))))
-       (log/info "Will rest.")
-       (Thread/sleep (* 1 60 60 1000)))))
+   (let [looping (atom true)]
+     (while @looping
+       (do
+         (swap! looping (fn [_] config/should-loop))
+         (log/info "Bot Active")
+         (let [recs  (all-resources)]
+           (log/info "Got" (count recs) "resources")
+           (doseq [rec recs]
+             (log/info "Resource" rec)
+             (try
+               (when (dwca/occurrences? (:dwca rec))
+                 (run (:dwca rec) rec))
+               (catch Exception e (log/warn "Exception runing" rec e)))))
+         (log/info "Will rest.")
+         (Thread/sleep (* 1 60 60 1000))))))
 

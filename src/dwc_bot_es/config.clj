@@ -6,6 +6,7 @@
 
 (def es (or (env :elasticsearch) "http://localhost:9200"))
 (def index (or (env :index) "dwc"))
+(def should-loop (= "true" (or (env :loop) "false")))
 
 (defn load-base-inputs-0
   "Load a config file list into a list"
@@ -52,13 +53,18 @@
   (wait-es)
   (let [mapping (slurp (io/resource "occurrence_mapping.json"))]
     (try
-      (log/info 
-        (:body
-          (http/put (str es "/" index) {:throw-exceptions false})))
-      (log/info 
-        (:body
-          (http/put (str es "/" index "/_mapping/occurrence")
-            {:body  mapping
-             :headers {"Content-Type" "application/json"}})))
+      (let [r-idx (http/get (str es "/" index) {:throw-exceptions false})
+            r-typ (http/get (str es "/" index "/_mapping/occurrence") {:throw-exceptions false})]
+        (if (= 404 (:status r-idx))
+          (log/info 
+            (:body
+              (http/put (str es "/" index) {:throw-exceptions false}))))
+        (if (or (= 404 (:status r-typ)) (= "{}" (:body r-typ)))
+          (log/info 
+            (:body
+              (http/put (str es "/" index "/_mapping/occurrence")
+                {:body  mapping
+                 :throw-exceptions false
+                 :headers {"Content-Type" "application/json"}})))))
       (catch Exception e (log/error e)))))
 
