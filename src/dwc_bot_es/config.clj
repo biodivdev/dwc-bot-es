@@ -21,8 +21,8 @@
 (defn inputs
   "Load sources from defined config file"
   [] 
-  (let [env   (io/file (or (env :sources) "/etc/biodiv/sources.list"))
-        base  (io/resource "sources.list")]
+  (let [env   (io/file (or (env :dwc-bot) "/etc/biodiv/dwc-bot.list"))
+        base  (io/resource "dwc-bot.list")]
     (if (.exists env)
       (do 
         (log/info env)

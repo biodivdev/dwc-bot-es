@@ -31,32 +31,23 @@ Manual:
 
 Download the latest jar from the [ realases page ](https://github.com/diogok/dwc-bot-es/releases) and run it:
 
-  $ java -server -jar dwc-bot-es.jar
+    $ java -server -jar dwc-bot-es.jar
+
+For all:
+
+It will look for a list of IPTs to crawl in /etc/biodiv/dwc-bot.list or at DWC\_BOT env var.
+
+You can set the ElasticSearch and Index to use with env vars, such as:
+
+    $ DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
 
 ## Dev
 
 Install leningen, the tasks are:
 
     $ lein run # to run the server, with code reload
-    $ lein midje # for tests
     $ lein uberjar # generate the deploy artifact
     $ docker build -t dwc-bot . # build the docker image
-
-## Some numbers
-
-Final run in SQLite with Fulltext Search:
-
-- 113 resources (circa 635MB zip)
-- 490000+ occurrences
-- 30 minutes
-- 8.7 GB
-
-Concluding:
-
-- 1.8KB per occurrence
-- 2.700 occurrences per second
-- 15x the size of the DarwinCore Zip
-- 1.5x the size of the DarwinCore CSV
 
 ## License
 
