@@ -22,6 +22,13 @@
 (defn source-name
   [source] (second (re-find #"r=([a-zA-Z0-9_\-]+)" source)))
 
+(defn source-id
+  [source]
+   (let [h (hash source)]
+     (if (< h 0)
+       (* h -1)
+       h)))
+
 (defn point
   [occ] 
   (when (and (not (nil? (:decimalLatitude occ))) 
@@ -88,6 +95,8 @@
   [row-type rec]
  (let [source (:link rec)]
    (log/info "->" source)
+   (http/post (str config/es "/" config/index "/resource/" (source-id (:link rec)))
+      {:body (json/write-str (assoc rec :resource (source-name (:link rec)) :id (source-id (:link rec))))})
    (let [waiter (chan 1)
          batch  (batcher {:size (* 1 1024)
                           :fn (partial bulk-insert source row-type)
