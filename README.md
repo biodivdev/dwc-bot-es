@@ -1,12 +1,14 @@
 # dwc-bot-es
 
-A bot to read DarwinCore Archives from IPTs and index them on ElasticSearch.
+A bot to read DarwinCore Archives from IPTs and index them on ElasticSearch, indexing Resources, Checklists and Occurrences.
 
 ## Deploy
 
-With docker (recommended):
+### Run with Docker
 
-    $ docker run -d -p 8383:8383 -volume /var/data/dwc-bot:/var/data/dwc-bot:rw diogok/dwc-bot
+Run the docker container
+
+    $ docker run -d -volume /var/data/dwc-bot:/var/data/dwc-bot:rw diogok/dwc-bot-es
 
 With docker-compose:
 
@@ -20,20 +22,20 @@ services:
     ports:
       - 9200:9200
     volumes:
-      - /var/data/dwc-elasticsearch/data:/usr/share/elasticsearch/data:rw
+      - /var/data/dwc-bot:/usr/share/elasticsearch:rw
   kibana:
     image: diogok/kibana
     ports:
       - 8001:8001
 ```
 
-Manual:
+### Run the JAR
 
 Download the latest jar from the [ realases page ](https://github.com/diogok/dwc-bot-es/releases) and run it:
 
     $ java -server -jar dwc-bot-es.jar
 
-For all:
+### Configuration
 
 It will look for a list of IPTs to crawl in /etc/biodiv/dwc-bot.list or at DWC\_BOT env var.
 
@@ -43,11 +45,19 @@ You can set the ElasticSearch and Index to use with env vars, such as:
 
 ## Dev
 
+Start the elasticsearch local server with docker-compose:
+
+
+
 Install leningen, the tasks are:
 
-    $ lein run # to run the server, with code reload
+    $ lein run # to run the bot once
     $ lein uberjar # generate the deploy artifact
     $ docker build -t dwc-bot . # build the docker image
+
+If not using the docker-compose elasticsearch and not at localhost:9200, set the proper environment variable:
+
+    $ ELASTICSEARCH=http://elasticsearch:9200 lein run
 
 ## License
 

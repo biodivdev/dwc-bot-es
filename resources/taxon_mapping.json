@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "acceptedNameUsage": {
+      "type": "string"
+      ,"store":true
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "family": {
+      "type": "string"
+      ,"store":true
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "genus": {
+      "type": "string"
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "scientificName": {
+      "type": "string"
+      ,"store":true
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "scientificNameAuthorship": {
+      "type": "string"
+      ,"store":true
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "scientificNameWithoutAuthorship": {
+      "type": "string"
+      ,"store":true
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "higherClassification": {
+      "type": "string"
+      ,"fields": {
+        "raw": {
+          "type": "string"
+          ,"index": "not_analyzed"
+        }
+      }
+    },
+    "taxonID": {
+      "type": "string"
+    },
+    "taxonRank": {
+      "type": "string"
+    },
+    "taxonomicStatus": {
+      "type": "string"
+    }
+  }
+}
+

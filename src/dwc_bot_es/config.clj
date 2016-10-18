@@ -49,22 +49,24 @@
     (log/info (str "Done: " es))))
 
 (defn setup
-  []
-  (wait-es)
-  (let [mapping (slurp (io/resource "occurrence_mapping.json"))]
-    (try
-      (let [r-idx (http/get (str es "/" index) {:throw-exceptions false})
-            r-typ (http/get (str es "/" index "/_mapping/occurrence") {:throw-exceptions false})]
-        (if (= 404 (:status r-idx))
-          (log/info 
-            (:body
-              (http/put (str es "/" index) {:throw-exceptions false}))))
-        (if (or (= 404 (:status r-typ)) (= "{}" (:body r-typ)))
-          (log/info 
-            (:body
-              (http/put (str es "/" index "/_mapping/occurrence")
-                {:body  mapping
-                 :throw-exceptions false
-                 :headers {"Content-Type" "application/json"}})))))
-      (catch Exception e (log/error e)))))
+  ([] (setup "occurrence")
+      (setup "taxon"))
+  ([row-type]
+    (wait-es)
+    (let [mapping (slurp (io/resource (str row-type "_mapping.json" )))]
+      (try
+        (let [r-idx (http/get (str es "/" index) {:throw-exceptions false})
+              r-typ (http/get (str es "/" index "/_mapping/" row-type) {:throw-exceptions false})]
+          (if (= 404 (:status r-idx))
+            (log/info 
+              (:body
+                (http/put (str es "/" index) {:throw-exceptions false}))))
+          (if (or (= 404 (:status r-typ)) (= "{}" (:body r-typ)))
+            (log/info 
+              (:body
+                (http/put (str es "/" index "/_mapping/" row-type)
+                  {:body  mapping
+                   :throw-exceptions false
+                   :headers {"Content-Type" "application/json"}})))))
+        (catch Exception e (log/error e))))))
 

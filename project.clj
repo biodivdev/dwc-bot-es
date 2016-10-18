@@ -1,4 +1,4 @@
-(defproject dwc-bot-es "0.0.1"
+(defproject dwc-bot-es "0.0.2"
   :description "Insert DarwinCore Archives Occurrences from IPT into ElasticSearch"
   :url "http://github.com/diogok/dwc-bot-es"
   :license {:name "MIT"}
@@ -13,7 +13,7 @@
                  [clj-time "0.12.0"]
 
                  [batcher "0.1.1"]
-                 [dwc-io "0.0.58"]
+                 [dwc-io "0.0.59"]
 
                  [com.taoensso/timbre "4.7.4"]
                  [environ "1.1.0"]]
