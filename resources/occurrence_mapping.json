@@ -1,71 +1,58 @@
 {
   "properties": {
     "occurrenceID":{
-      "type":"string"
-      ,"store":true
-      ,"index":"not_analyzed"
+      "type":"keyword"
     },
     "scientificName": {
-      "type": "string"
-      ,"store":true
-      ,"fields": {
-        "raw": {
-          "type": "string"
-          ,"index": "not_analyzed"
-        }
-      }
+      "type": "text"
     },
     "scientificNameAuthorship": {
-      "type": "string"
-      ,"store":true
+      "type": "text"
       ,"fields": {
-        "raw": {
-          "type": "string"
-          ,"index": "not_analyzed"
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
         }
       }
     },
     "scientificNameWithoutAuthorship": {
-      "type": "string"
-      ,"store":true
+      "type": "text"
       ,"fields": {
-        "raw": {
-          "type": "string"
-          ,"index": "not_analyzed"
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
         }
       }
     },
     "acceptedNameUsage": {
-      "type": "string"
-      ,"store":true
+      "type": "text"
       ,"fields": {
-        "raw": {
-          "type": "string"
-          ,"index": "not_analyzed"
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
         }
       }
     },
     "family": {
-      "type": "string"
-      ,"store":true
+      "type": "text"
       ,"fields": {
-        "raw": {
-          "type": "string"
-          ,"index": "not_analyzed"
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
         }
       }
     },
+    "eventDate": {
+      "type":"date"
+      ,"ignore_malformed":true
+    },
     "decimalLatitude": {
-      "store":true
-      ,"type":"double"
+      "type":"double"
     },
     "decimalLongitude":{
-      "store":true
-      ,"type":"double"
+      "type":"double"
     },
     "point": {
-      "store": true,
-      "lat_lon": true,
       "type": "geo_point"
     }
   }

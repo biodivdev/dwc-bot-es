@@ -15,9 +15,25 @@
   "Get current timestamp"
   [] (int (/ (System/currentTimeMillis) 1000)))
 
+(defn to-source
+  "Resource to source"
+  [url] 
+   (let [end (.lastIndexOf url "/")]
+     (str (.substring url 0 end))))
+
 (defn all-resources
   "Get all resources of all inputs ipts"
-  [] (flatten (map ipt-feed/get-resources (config/inputs))))
+  [ & args ]
+    (if (empty? args)
+      (flatten (map ipt-feed/get-resources (config/inputs))))
+      (filter
+        #(or
+          (some #{(:dwca % )} args)
+          (some #{(:link % )} args))
+        (flatten
+            (map 
+              ipt-feed/get-resources
+              (distinct (map to-source args))))))
 
 (defn source-name
   [source] (second (re-find #"r=([a-zA-Z0-9_\-]+)" source)))
@@ -47,8 +63,7 @@
   "Assoc metadata to the row"
   [src row] 
   (let [id (str (source-name src) ":" (or (:occurrenceID row) (:taxonID row)))]
-    (assoc row :id id
-               :identifier id
+    (assoc row :identifier id
                :timestamp (now)
                :point (point row)
                :source src)))
@@ -110,8 +125,7 @@
      (<!! waiter))))
 
 (defn -main
-  "Keep on running the bot on all sources. 
-   Return an status atom that can swap to :stop to stop the bot."
+  "Start the bot"
   [ & args ] 
    (config/setup)
    (let [looping (atom true)]
@@ -119,7 +133,7 @@
        (do
          (swap! looping (fn [_] config/should-loop))
          (log/info "Bot Active")
-         (let [recs  (all-resources)]
+         (let [recs  (apply all-resources args)]
            (log/info "Got" (count recs) "resources")
            (doseq [rec recs]
              (log/info "Resource" rec)
@@ -127,8 +141,8 @@
                (let [taxon? (dwca/checklist? (:dwca rec))
                      occ?   (dwca/occurrences? (:dwca rec))
                      rtype  (if taxon? :taxon (if occ? :occurrence))]
-               (when (or taxon? occ?)
-                 (run rtype rec)))
+                 (when (or taxon? occ?)
+                   (run rtype rec)))
                (catch Exception e (log/warn "Exception runing" rec e)))))
          (when @looping
            (do

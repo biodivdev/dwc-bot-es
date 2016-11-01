@@ -43,11 +43,16 @@ You can set the ElasticSearch and Index to use with env vars, such as:
 
     $ DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
 
+Or to run a single(or any) source(s):
+
+    $ ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar http://ipt.jbrj.gov.br/jbrj/resource?r=lista_especies_flora_brasil
+
 ## Dev
 
 Start the elasticsearch local server with docker-compose:
 
 
+    $ docker-compose up
 
 Install leningen, the tasks are:
 
