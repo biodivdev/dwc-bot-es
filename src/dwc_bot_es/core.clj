@@ -25,7 +25,7 @@
   "Get all resources of all inputs ipts"
   [ & args ]
     (if (empty? args)
-      (flatten (map ipt-feed/get-resources (config/inputs))))
+      (flatten (map ipt-feed/get-resources (config/inputs)))
       (filter
         #(or
           (some #{(:dwca % )} args)
@@ -33,7 +33,7 @@
         (flatten
             (map 
               ipt-feed/get-resources
-              (distinct (map to-source args))))))
+              (distinct (map to-source args)))))))
 
 (defn source-name
   [source] (second (re-find #"r=([a-zA-Z0-9_\-]+)" source)))
