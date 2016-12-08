@@ -4,9 +4,26 @@
   (:require [environ.core :refer (env)])
   (:require [taoensso.timbre :as log]))
 
-(def es (or (env :elasticsearch) "http://localhost:9200"))
-(def index (or (env :index) "dwc"))
-(def should-loop (= "true" (or (env :loop) "false")))
+(defn config-file
+  []
+  (let [env   (io/file (or (env :config) "/etc/biodiv/config.ini"))
+        base  (io/resource "config.ini")]
+    (if (.exists env)
+      env
+      base)))
+
+(defn cfg
+  ([] 
+    (with-open [rdr (io/reader (config-file))]
+      (->> (line-seq rdr)
+           (map #(.trim %))
+           (filter #(and (not (nil? %)) (not (empty? %))))
+           (map (fn [line] ( .split line "=" )))
+           (map (fn [pair] [(keyword (.toLowerCase (.trim (first pair)))) (.trim (last pair))]))
+           (map (fn [kv] {(first kv) (or (env (first kv)) (last kv))}))
+           (reduce merge {}))))
+  ([k] ((cfg) k)))
+
 
 (defn load-base-inputs-0
   "Load a config file list into a list"
@@ -37,8 +54,8 @@
   (let [done (atom false)]
     (while (not @done)
       (try 
-        (log/info (str "Waiting: " es))
-        (let [r (http/get es  {:throw-exceptions false})]
+        (log/info (str "Waiting: " (cfg :elasticsearch)))
+        (let [r (http/get (cfg :elasticsearch)  {:throw-exceptions false})]
           (if (= 200 (:status r))
             (reset! done true)
             (Thread/sleep 1000)))
@@ -46,7 +63,7 @@
           (do
             (log/warn (.toString e))
             (Thread/sleep 1000)))))
-    (log/info (str "Done: " es))))
+    (log/info (str "Done: " (cfg :elasticsearch)))))
 
 (defn setup
   ([] (setup "occurrence")
@@ -55,16 +72,16 @@
     (wait-es)
     (let [mapping (slurp (io/resource (str row-type "_mapping.json" )))]
       (try
-        (let [r-idx (http/get (str es "/" index) {:throw-exceptions false})
-              r-typ (http/get (str es "/" index "/_mapping/" row-type) {:throw-exceptions false})]
+        (let [r-idx (http/get (str (cfg :elasticsearch) "/" (cfg :index)) {:throw-exceptions false})
+              r-typ (http/get (str (cfg :elasticsearch) "/" (cfg :index) "/_mapping/" row-type) {:throw-exceptions false})]
           (if (= 404 (:status r-idx))
             (log/info 
               (:body
-                (http/put (str es "/" index) {:throw-exceptions false}))))
+                (http/put (str (cfg :elasticsearch) "/" (cfg :index)) {:throw-exceptions false}))))
           (if (or (= 404 (:status r-typ)) (= "{}" (:body r-typ)))
             (log/info 
               (:body
-                (http/put (str es "/" index "/_mapping/" row-type)
+                (http/put (str (cfg :elasticsearch) "/" (cfg :index) "/_mapping/" row-type)
                   {:body  mapping
                    :throw-exceptions false
                    :headers {"Content-Type" "application/json"}})))))

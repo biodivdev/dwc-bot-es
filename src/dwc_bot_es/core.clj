@@ -72,7 +72,7 @@
   [src row-type row]
   "Prepare to send to elasticsearch"
    (let [doc (metadata src row)]
-     [{:index {:_index config/index :_type (name row-type) :_id (:id doc)}}
+     [{:index {:_index (config/cfg :index) :_type (name row-type) :_id (:id doc)}}
       doc]))
 
 (defn fix
@@ -98,7 +98,7 @@
   (when (> (count rows) 0)
     (let [body (make-body src row-type rows)]
        (try
-           (http/post (str config/es "/" config/index "/_bulk") {:body body})
+           (http/post (str (config/cfg :elasticsearch) "/" (config/cfg :index) "/_bulk") {:body body})
            (log/info "Saved" (count rows) " " (name row-type) " from " src)
          (catch Exception e
            (do (log/warn "Error saving" (.getMessage e))
@@ -110,7 +110,7 @@
   [row-type rec]
  (let [source (:link rec)]
    (log/info "->" source)
-   (http/post (str config/es "/" config/index "/resource/" (source-id (:link rec)))
+   (http/post (str (config/cfg :elasticsearch) "/" (config/cfg :index) "/resource/" (source-id (:link rec)))
       {:body (json/write-str (assoc rec :resource (source-name (:link rec)) :id (source-id (:link rec))))})
    (let [waiter (chan 1)
          batch  (batcher {:size (* 1 1024)
@@ -131,7 +131,7 @@
    (let [looping (atom true)]
      (while @looping
        (do
-         (swap! looping (fn [_] config/should-loop))
+         (swap! looping (fn [_] (= "true" (config/cfg :loop))))
          (log/info "Bot Active")
          (let [recs  (apply all-resources args)]
            (log/info "Got" (count recs) "resources")
