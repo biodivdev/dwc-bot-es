@@ -8,15 +8,17 @@ A bot to read DarwinCore Archives from IPTs and index them on ElasticSearch, ind
 
 Run the docker container
 
-    $ docker run -d -volume /var/data/dwc-bot:/var/data/dwc-bot:rw diogok/dwc-bot-es
+    $ docker run -d -volume /etc/biodiv:/etc/biodiv:ro diogok/dwc-bot-es
 
-With docker-compose:
+With docker-compose, including ElasticSearch and Kibana for exploration:
 
 ```yaml
 version: "2"
 services:
   dwc-bot-es:
     image: diogok/dwc-bot-es
+    volumes:
+      - /etc/biodiv:/etc/biodiv:ro
   elasticsearch:
     image: diogok/elasticsearch
     ports:
@@ -37,9 +39,9 @@ Download the latest jar from the [ realases page ](https://github.com/diogok/dwc
 
 ### Configuration
 
-It will look for a list of IPTs to crawl in /etc/biodiv/dwc-bot.list or at DWC\_BOT env var.
+It will look for a list of IPTs to crawl in /etc/biodiv/dwc-bot.list or at the directory defined by DWC\_BOT environment variable.
 
-You can set the ElasticSearch and Index to use with env vars, such as:
+You can set the ElasticSearch and Index to use with environment variables, such as:
 
     $ DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
 
@@ -47,14 +49,21 @@ Or to run a single(or any) source(s):
 
     $ ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar http://ipt.jbrj.gov.br/jbrj/resource?r=lista_especies_flora_brasil
 
-## Dev
+The environment variable LOOP controls if the bot should run only once or keep running:
+
+    $ LOOP=true java -jar dwc-bot-es.jar
+
+Or all options combined:
+
+    $ LOOP=true DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
+
+## Development
 
 Start the elasticsearch local server with docker-compose:
 
-
     $ docker-compose up
 
-Install leningen, the tasks are:
+Using leningen, the tasks are:
 
     $ lein run # to run the bot once
     $ lein uberjar # generate the deploy artifact
