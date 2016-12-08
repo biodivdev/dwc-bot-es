@@ -43,11 +43,11 @@ It will look for a list of IPTs to crawl in /etc/biodiv/dwc-bot.list or at the d
 
 You can set the ElasticSearch and Index to use with environment variables, such as:
 
-    $ DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
+    $ DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 INDEX=dwc java -jar dwc-bot-es.jar
 
 Or to run a single(or any) source(s):
 
-    $ ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar http://ipt.jbrj.gov.br/jbrj/resource?r=lista_especies_flora_brasil
+    $ ELASTICSEARCH=http://localhost:9200 INDEX=dwc java -jar dwc-bot-es.jar http://ipt.jbrj.gov.br/jbrj/resource?r=lista_especies_flora_brasil
 
 The environment variable LOOP controls if the bot should run only once or keep running:
 
@@ -55,7 +55,11 @@ The environment variable LOOP controls if the bot should run only once or keep r
 
 Or all options combined:
 
-    $ LOOP=true DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 IDNEX=dwc java -jar dwc-bot-es.jar
+    $ LOOP=true DWC_BOT=/etc/biodiv/dwc-bot.list ELASTICSEARCH=http://localhost:9200 INDEX=dwc java -jar dwc-bot-es.jar
+
+If not running on a system with environment variables you can also set them using java properties, as such:
+
+    $ java -jar -DLOOP=true -DDWC_BOT=/etc/biodiv/dwc-bot.list -DELASTICSEARCH=http://localhost:9200 -DINDEX=dwc dwc-bot-es.jar
 
 ## Development
 
